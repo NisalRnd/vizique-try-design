@@ -18,6 +18,13 @@ const VirtualTryOn = () => {
   const handleGenerate = async () => {
     if (!avatarImage || !garmentImage || !backgroundImage || !poseImage) return;
     
+    // Log Base64 encoded images
+    console.log('Avatar Image (Base64):', avatarImage);
+    console.log('Garment Image (Base64):', garmentImage);
+    console.log('Background Image (Base64):', backgroundImage);
+    console.log('Pose Image (Base64):', poseImage);
+    console.log('Refinement Prompt:', prompt);
+    
     setIsGenerating(true);
     // TODO: Integrate with AI backend
     setTimeout(() => {

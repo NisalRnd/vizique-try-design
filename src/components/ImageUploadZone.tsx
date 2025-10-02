@@ -11,15 +11,31 @@ interface ImageUploadZoneProps {
 const ImageUploadZone = ({ label, onImageUpload, image }: ImageUploadZoneProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+  const handleFile = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onloadend = () => {
         onImageUpload(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
   };
 
   const handleRemove = () => {
@@ -36,18 +52,20 @@ const ImageUploadZone = ({ label, onImageUpload, image }: ImageUploadZoneProps) 
       {!image ? (
         <div
           onClick={() => fileInputRef.current?.click()}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
           className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-[var(--transition-smooth)]"
         >
           <Upload className="w-6 h-6 mx-auto mb-1 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground">Click to upload</p>
+          <p className="text-xs text-muted-foreground">Click or drag to upload</p>
           <p className="text-[10px] text-muted-foreground mt-0.5">PNG, JPG up to 10MB</p>
         </div>
       ) : (
-        <div className="relative rounded-lg overflow-hidden border border-border">
+        <div className="relative rounded-lg overflow-hidden border border-border bg-muted">
           <img
             src={image}
             alt={label}
-            className="w-full h-32 object-cover"
+            className="w-full h-32 object-contain"
           />
           <Button
             variant="destructive"
