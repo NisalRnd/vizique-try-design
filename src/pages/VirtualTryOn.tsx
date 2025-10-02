@@ -7,19 +7,21 @@ import ImageUploadZone from "@/components/ImageUploadZone";
 import ResultDisplay from "@/components/ResultDisplay";
 
 const VirtualTryOn = () => {
-  const [modelImage, setModelImage] = useState<string | null>(null);
-  const [clothingImage, setClothingImage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const [garmentImage, setGarmentImage] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [poseImage, setPoseImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {
-    if (!modelImage || !clothingImage) return;
+    if (!avatarImage || !garmentImage || !backgroundImage || !poseImage) return;
     
     setIsGenerating(true);
     // TODO: Integrate with AI backend
     setTimeout(() => {
-      setResult(modelImage); // Placeholder
+      setResult(avatarImage); // Placeholder
       setIsGenerating(false);
     }, 2000);
   };
@@ -44,15 +46,27 @@ const VirtualTryOn = () => {
               
               <div className="space-y-6">
                 <ImageUploadZone
-                  label="Model Image"
-                  onImageUpload={setModelImage}
-                  image={modelImage}
+                  label="Avatar Image"
+                  onImageUpload={setAvatarImage}
+                  image={avatarImage}
                 />
                 
                 <ImageUploadZone
-                  label="Clothing/Accessory"
-                  onImageUpload={setClothingImage}
-                  image={clothingImage}
+                  label="Garment Image"
+                  onImageUpload={setGarmentImage}
+                  image={garmentImage}
+                />
+                
+                <ImageUploadZone
+                  label="Background"
+                  onImageUpload={setBackgroundImage}
+                  image={backgroundImage}
+                />
+                
+                <ImageUploadZone
+                  label="Pose Image"
+                  onImageUpload={setPoseImage}
+                  image={poseImage}
                 />
               </div>
             </Card>
@@ -69,7 +83,7 @@ const VirtualTryOn = () => {
 
             <Button
               onClick={handleGenerate}
-              disabled={!modelImage || !clothingImage || isGenerating}
+              disabled={!avatarImage || !garmentImage || !backgroundImage || !poseImage || isGenerating}
               className="w-full h-12 text-base font-medium"
               size="lg"
             >
