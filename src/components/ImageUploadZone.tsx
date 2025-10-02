@@ -36,26 +36,26 @@ const ImageUploadZone = ({ label, onImageUpload, image }: ImageUploadZoneProps) 
       {!image ? (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-[var(--transition-smooth)]"
+          className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-[var(--transition-smooth)]"
         >
-          <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Click to upload image</p>
-          <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
+          <Upload className="w-6 h-6 mx-auto mb-1 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">Click to upload</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">PNG, JPG up to 10MB</p>
         </div>
       ) : (
         <div className="relative rounded-lg overflow-hidden border border-border">
           <img
             src={image}
             alt={label}
-            className="w-full h-48 object-cover"
+            className="w-full h-32 object-cover"
           />
           <Button
             variant="destructive"
             size="icon"
-            className="absolute top-2 right-2"
+            className="absolute top-1 right-1 h-6 w-6"
             onClick={handleRemove}
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
           </Button>
         </div>
       )}
