@@ -34,7 +34,7 @@ const ResultDisplay = ({ result, isGenerating }: ResultDisplayProps) => {
         )}
       </div>
       
-      <div className="aspect-[3/4] rounded-lg border border-border overflow-hidden bg-muted">
+      <div className="aspect-[4/3] rounded-lg border border-border overflow-hidden bg-muted max-h-[600px]">
         {isGenerating ? (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center space-y-4">
