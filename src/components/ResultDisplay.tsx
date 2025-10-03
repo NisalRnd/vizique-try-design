@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download } from "lucide-react";
+import { Download, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface ResultDisplayProps {
   result: string | null;
@@ -9,6 +11,8 @@ interface ResultDisplayProps {
 }
 
 const ResultDisplay = ({ result, isGenerating }: ResultDisplayProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const handleDownload = () => {
     if (!result) return;
     
@@ -43,11 +47,27 @@ const ResultDisplay = ({ result, isGenerating }: ResultDisplayProps) => {
             </div>
           </div>
         ) : result ? (
-          <img
-            src={result}
-            alt="Generated result"
-            className="w-full h-full object-cover"
-          />
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <div className="relative w-full h-full cursor-pointer group">
+                <img
+                  src={result}
+                  alt="Generated result"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            </DialogTrigger>
+            <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-auto">
+              <img
+                src={result}
+                alt="Generated result - Full view"
+                className="w-full h-auto"
+              />
+            </DialogContent>
+          </Dialog>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">
             <div className="text-center">
