@@ -62,7 +62,7 @@ const VirtualTryOn = () => {
       </header>
 
       <main className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-[400px_1fr] gap-8">
           <div className="space-y-6">
             <Card className="p-6 bg-card shadow-[var(--shadow-soft)]">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
