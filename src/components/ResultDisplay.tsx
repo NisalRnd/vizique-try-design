@@ -36,8 +36,11 @@ const ResultDisplay = ({ result, isGenerating }: ResultDisplayProps) => {
       
       <div className="aspect-[3/4] rounded-lg border border-border overflow-hidden bg-muted">
         {isGenerating ? (
-          <div className="w-full h-full flex flex-col gap-2 p-4">
-            <Skeleton className="w-full h-full" />
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <Skeleton className="w-48 h-64 mx-auto" />
+              <p className="text-sm text-muted-foreground animate-pulse">Generating...</p>
+            </div>
           </div>
         ) : result ? (
           <img

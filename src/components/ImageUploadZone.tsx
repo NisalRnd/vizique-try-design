@@ -54,18 +54,18 @@ const ImageUploadZone = ({ label, onImageUpload, image }: ImageUploadZoneProps) 
           onClick={() => fileInputRef.current?.click()}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-[var(--transition-smooth)]"
+          className="w-32 h-32 border-2 border-dashed border-border rounded-lg p-3 text-center cursor-pointer hover:border-primary hover:bg-accent/50 transition-[var(--transition-smooth)] flex flex-col items-center justify-center"
         >
-          <Upload className="w-6 h-6 mx-auto mb-1 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground">Click or drag to upload</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">PNG, JPG up to 10MB</p>
+          <Upload className="w-5 h-5 mb-1 text-muted-foreground" />
+          <p className="text-[10px] text-muted-foreground">Click or drag</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">PNG, JPG</p>
         </div>
       ) : (
-        <div className="relative rounded-lg overflow-hidden border border-border bg-muted">
+        <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-border bg-muted">
           <img
             src={image}
             alt={label}
-            className="w-full h-32 object-contain"
+            className="w-full h-full object-cover"
           />
           <Button
             variant="destructive"

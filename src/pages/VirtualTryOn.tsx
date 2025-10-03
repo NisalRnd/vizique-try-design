@@ -36,9 +36,28 @@ const VirtualTryOn = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold">Virtual Try-On</h1>
-          <p className="text-sm text-muted-foreground">Visualize clothing on your model</p>
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Virtual Try-On</h1>
+            <p className="text-sm text-muted-foreground">Visualize clothing on your model</p>
+          </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={!avatarImage || !garmentImage || !backgroundImage || !poseImage || isGenerating}
+            className="h-10 px-6"
+          >
+            {isGenerating ? (
+              <>
+                <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Generate Try-On
+              </>
+            )}
+          </Button>
         </div>
       </header>
 
@@ -87,25 +106,6 @@ const VirtualTryOn = () => {
                 className="min-h-[100px] resize-none"
               />
             </Card>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={!avatarImage || !garmentImage || !backgroundImage || !poseImage || isGenerating}
-              className="w-full h-12 text-base font-medium"
-              size="lg"
-            >
-              {isGenerating ? (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Generate Try-On
-                </>
-              )}
-            </Button>
           </div>
 
           <ResultDisplay result={result} isGenerating={isGenerating} />
