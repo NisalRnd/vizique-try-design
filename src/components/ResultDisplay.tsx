@@ -8,9 +8,10 @@ import { useState } from "react";
 interface ResultDisplayProps {
   result: string | null;
   isGenerating: boolean;
+  elapsedTime: number;
 }
 
-const ResultDisplay = ({ result, isGenerating }: ResultDisplayProps) => {
+const ResultDisplay = ({ result, isGenerating, elapsedTime }: ResultDisplayProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDownload = () => {
@@ -37,6 +38,16 @@ const ResultDisplay = ({ result, isGenerating }: ResultDisplayProps) => {
           </Button>
         )}
       </div>
+      
+      {(isGenerating || (elapsedTime > 0 && result)) && (
+        <div className="mb-4 text-sm text-muted-foreground text-center py-2 px-4 bg-muted rounded-md">
+          {isGenerating ? (
+            <span className="animate-pulse">Loading: {elapsedTime}ms</span>
+          ) : (
+            <span>Generated in {elapsedTime}ms</span>
+          )}
+        </div>
+      )}
       
       <div className="aspect-[4/3] rounded-lg border border-border overflow-hidden bg-muted max-h-[600px]">
         {isGenerating ? (

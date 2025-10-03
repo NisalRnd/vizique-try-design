@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,22 @@ const VirtualTryOn = () => {
   const [prompt, setPrompt] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isGenerating && startTime) {
+      interval = setInterval(() => {
+        setElapsedTime(Date.now() - startTime);
+      }, 10);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isGenerating, startTime]);
 
   const handleGenerate = async () => {
     if (!avatarImage || !garmentImage || !backgroundImage || !poseImage) return;
@@ -25,6 +41,9 @@ const VirtualTryOn = () => {
     console.log('Pose Image (Base64):', poseImage);
     console.log('Refinement Prompt:', prompt);
     
+    const start = Date.now();
+    setStartTime(start);
+    setElapsedTime(0);
     setIsGenerating(true);
     // TODO: Integrate with AI backend
     setTimeout(() => {
@@ -108,7 +127,7 @@ const VirtualTryOn = () => {
             </Card>
           </div>
 
-          <ResultDisplay result={result} isGenerating={isGenerating} />
+          <ResultDisplay result={result} isGenerating={isGenerating} elapsedTime={elapsedTime} />
         </div>
       </main>
     </div>
