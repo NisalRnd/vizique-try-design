@@ -3,12 +3,14 @@ import { Upload, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ImageUploadZone from "@/components/ImageUploadZone";
 import ResultDisplay from "@/components/ResultDisplay";
 
 const VirtualTryOn = () => {
   const [images, setImages] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
+  const [model, setModel] = useState("google/gemini-2.5-flash");
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -45,6 +47,7 @@ const VirtualTryOn = () => {
     // Log Base64 encoded images array
     console.log('Images Array (Base64):', images);
     console.log('Refinement Prompt:', prompt);
+    console.log('Selected Model:', model);
     
     const start = Date.now();
     setStartTime(start);
@@ -65,23 +68,38 @@ const VirtualTryOn = () => {
             <h1 className="text-2xl font-bold">Virtual Try-On</h1>
             <p className="text-sm text-muted-foreground">Visualize clothing on your model</p>
           </div>
-          <Button
-            onClick={handleGenerate}
-            disabled={images.length === 0 || isGenerating}
-            className="h-10 px-6"
-          >
-            {isGenerating ? (
-              <>
-                <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 mr-2" />
-                Generate Try-On
-              </>
-            )}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger className="w-[240px] h-10">
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="google/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                <SelectItem value="google/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                <SelectItem value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</SelectItem>
+                <SelectItem value="openai/gpt-5">GPT-5</SelectItem>
+                <SelectItem value="openai/gpt-5-mini">GPT-5 Mini</SelectItem>
+                <SelectItem value="openai/gpt-5-nano">GPT-5 Nano</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleGenerate}
+              disabled={images.length === 0 || isGenerating}
+              className="h-10 px-6"
+            >
+              {isGenerating ? (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Try-On
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </header>
 
