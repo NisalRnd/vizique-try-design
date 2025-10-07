@@ -96,23 +96,29 @@ const VirtualTryOn = () => {
                   image={avatarImage}
                 />
                 
-                <ImageUploadZone
-                  label="Garment Image"
-                  onImageUpload={setGarmentImage}
-                  image={garmentImage}
-                />
+                {avatarImage && (
+                  <ImageUploadZone
+                    label="Garment Image"
+                    onImageUpload={setGarmentImage}
+                    image={garmentImage}
+                  />
+                )}
                 
-                <ImageUploadZone
-                  label="Background"
-                  onImageUpload={setBackgroundImage}
-                  image={backgroundImage}
-                />
+                {avatarImage && garmentImage && (
+                  <ImageUploadZone
+                    label="Background"
+                    onImageUpload={setBackgroundImage}
+                    image={backgroundImage}
+                  />
+                )}
                 
-                <ImageUploadZone
-                  label="Pose Image"
-                  onImageUpload={setPoseImage}
-                  image={poseImage}
-                />
+                {avatarImage && garmentImage && backgroundImage && (
+                  <ImageUploadZone
+                    label="Pose Image"
+                    onImageUpload={setPoseImage}
+                    image={poseImage}
+                  />
+                )}
               </div>
             </Card>
 

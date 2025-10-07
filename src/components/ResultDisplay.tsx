@@ -42,9 +42,9 @@ const ResultDisplay = ({ result, isGenerating, elapsedTime }: ResultDisplayProps
       {(isGenerating || (elapsedTime > 0 && result)) && (
         <div className="mb-4 text-sm text-muted-foreground text-center py-2 px-4 bg-muted rounded-md">
           {isGenerating ? (
-            <span className="animate-pulse">Loading: {elapsedTime}ms</span>
+            <span className="animate-pulse">Loading: {(elapsedTime / 1000).toFixed(2)}s</span>
           ) : (
-            <span>Generated in {elapsedTime}ms</span>
+            <span>Generated in {(elapsedTime / 1000).toFixed(2)}s</span>
           )}
         </div>
       )}
@@ -64,18 +64,18 @@ const ResultDisplay = ({ result, isGenerating, elapsedTime }: ResultDisplayProps
                 <img
                   src={result}
                   alt="Generated result"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                   <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             </DialogTrigger>
-            <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-auto">
+            <DialogContent className="max-w-screen max-h-screen w-screen h-screen p-4 flex items-center justify-center">
               <img
                 src={result}
                 alt="Generated result - Full view"
-                className="w-full h-auto"
+                className="max-w-full max-h-full object-contain"
               />
             </DialogContent>
           </Dialog>
