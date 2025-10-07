@@ -3,7 +3,7 @@ import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ImageUploadZoneProps {
-  label: string;
+  label?: string;
   onImageUpload: (image: string | null) => void;
   image: string | null;
 }
@@ -47,7 +47,7 @@ const ImageUploadZone = ({ label, onImageUpload, image }: ImageUploadZoneProps) 
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
+      {label && <label className="text-sm font-medium">{label}</label>}
       
       {!image ? (
         <div

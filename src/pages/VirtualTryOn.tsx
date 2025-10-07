@@ -62,7 +62,7 @@ const VirtualTryOn = () => {
           </div>
           <Button
             onClick={handleGenerate}
-            disabled={!avatarImage || !garmentImage || !backgroundImage || !poseImage || isGenerating}
+            disabled={(!avatarImage && !garmentImage && !backgroundImage && !poseImage) || isGenerating}
             className="h-10 px-6"
           >
             {isGenerating ? (
@@ -91,14 +91,12 @@ const VirtualTryOn = () => {
               
               <div className="space-y-6">
                 <ImageUploadZone
-                  label="Avatar Image"
                   onImageUpload={setAvatarImage}
                   image={avatarImage}
                 />
                 
                 {avatarImage && (
                   <ImageUploadZone
-                    label="Garment Image"
                     onImageUpload={setGarmentImage}
                     image={garmentImage}
                   />
@@ -106,7 +104,6 @@ const VirtualTryOn = () => {
                 
                 {avatarImage && garmentImage && (
                   <ImageUploadZone
-                    label="Background"
                     onImageUpload={setBackgroundImage}
                     image={backgroundImage}
                   />
@@ -114,7 +111,6 @@ const VirtualTryOn = () => {
                 
                 {avatarImage && garmentImage && backgroundImage && (
                   <ImageUploadZone
-                    label="Pose Image"
                     onImageUpload={setPoseImage}
                     image={poseImage}
                   />
