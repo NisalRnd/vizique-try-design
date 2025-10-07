@@ -7,10 +7,7 @@ import ImageUploadZone from "@/components/ImageUploadZone";
 import ResultDisplay from "@/components/ResultDisplay";
 
 const VirtualTryOn = () => {
-  const [avatarImage, setAvatarImage] = useState<string | null>(null);
-  const [garmentImage, setGarmentImage] = useState<string | null>(null);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
-  const [poseImage, setPoseImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -31,14 +28,22 @@ const VirtualTryOn = () => {
     };
   }, [isGenerating, startTime]);
 
+  const handleImageUpload = (index: number, image: string | null) => {
+    if (image) {
+      const newImages = [...images];
+      newImages[index] = image;
+      setImages(newImages);
+    } else {
+      // Remove image at index
+      setImages(images.filter((_, i) => i !== index));
+    }
+  };
+
   const handleGenerate = async () => {
-    if (!avatarImage || !garmentImage || !backgroundImage || !poseImage) return;
+    if (images.length === 0) return;
     
-    // Log Base64 encoded images
-    console.log('Avatar Image (Base64):', avatarImage);
-    console.log('Garment Image (Base64):', garmentImage);
-    console.log('Background Image (Base64):', backgroundImage);
-    console.log('Pose Image (Base64):', poseImage);
+    // Log Base64 encoded images array
+    console.log('Images Array (Base64):', images);
     console.log('Refinement Prompt:', prompt);
     
     const start = Date.now();
@@ -47,7 +52,7 @@ const VirtualTryOn = () => {
     setIsGenerating(true);
     // TODO: Integrate with AI backend
     setTimeout(() => {
-      setResult(avatarImage); // Placeholder
+      setResult(images[0]); // Placeholder
       setIsGenerating(false);
     }, 2000);
   };
@@ -62,7 +67,7 @@ const VirtualTryOn = () => {
           </div>
           <Button
             onClick={handleGenerate}
-            disabled={(!avatarImage && !garmentImage && !backgroundImage && !poseImage) || isGenerating}
+            disabled={images.length === 0 || isGenerating}
             className="h-10 px-6"
           >
             {isGenerating ? (
@@ -90,31 +95,19 @@ const VirtualTryOn = () => {
               </h2>
               
               <div className="space-y-6">
+                {images.map((image, index) => (
+                  <ImageUploadZone
+                    key={index}
+                    onImageUpload={(img) => handleImageUpload(index, img)}
+                    image={image}
+                  />
+                ))}
+                
+                {/* Always show an empty slot to add a new image */}
                 <ImageUploadZone
-                  onImageUpload={setAvatarImage}
-                  image={avatarImage}
+                  onImageUpload={(img) => handleImageUpload(images.length, img)}
+                  image={null}
                 />
-                
-                {avatarImage && (
-                  <ImageUploadZone
-                    onImageUpload={setGarmentImage}
-                    image={garmentImage}
-                  />
-                )}
-                
-                {avatarImage && garmentImage && (
-                  <ImageUploadZone
-                    onImageUpload={setBackgroundImage}
-                    image={backgroundImage}
-                  />
-                )}
-                
-                {avatarImage && garmentImage && backgroundImage && (
-                  <ImageUploadZone
-                    onImageUpload={setPoseImage}
-                    image={poseImage}
-                  />
-                )}
               </div>
             </Card>
 
