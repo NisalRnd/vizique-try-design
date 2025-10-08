@@ -3,13 +3,15 @@ import { Upload, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ImageUploadZone from "@/components/ImageUploadZone";
 import ResultDisplay from "@/components/ResultDisplay";
 
 const RoomDecoration = () => {
-  const [roomImage, setRoomImage] = useState<string | null>(null);
-  const [furnitureImage, setFurnitureImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+  const [maskImage, setMaskImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
+  const [model, setModel] = useState("google/gemini-2.5-flash");
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -29,8 +31,25 @@ const RoomDecoration = () => {
     };
   }, [isGenerating, startTime]);
 
+  const handleImageUpload = (index: number, image: string | null) => {
+    if (image) {
+      const newImages = [...images];
+      newImages[index] = image;
+      setImages(newImages);
+    } else {
+      // Remove image at index
+      setImages(images.filter((_, i) => i !== index));
+    }
+  };
+
   const handleGenerate = async () => {
-    if (!roomImage || !furnitureImage) return;
+    if (images.length === 0) return;
+    
+    // Log Base64 encoded images array
+    console.log('Images Array (Base64):', images);
+    console.log('Mask Image (Base64):', maskImage);
+    console.log('Placement Prompt:', prompt);
+    console.log('Selected Model:', model);
     
     const start = Date.now();
     setStartTime(start);
@@ -38,7 +57,7 @@ const RoomDecoration = () => {
     setIsGenerating(true);
     // TODO: Integrate with AI backend
     setTimeout(() => {
-      setResult(roomImage); // Placeholder
+      setResult(images[0]); // Placeholder
       setIsGenerating(false);
     }, 2000);
   };
@@ -46,14 +65,48 @@ const RoomDecoration = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold">Room Decoration</h1>
-          <p className="text-sm text-muted-foreground">Visualize furniture in your space</p>
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Room Decoration</h1>
+            <p className="text-sm text-muted-foreground">Visualize furniture in your space</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger className="w-[240px] h-10">
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="google/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                <SelectItem value="google/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                <SelectItem value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</SelectItem>
+                <SelectItem value="openai/gpt-5">GPT-5</SelectItem>
+                <SelectItem value="openai/gpt-5-mini">GPT-5 Mini</SelectItem>
+                <SelectItem value="openai/gpt-5-nano">GPT-5 Nano</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleGenerate}
+              disabled={images.length === 0 || isGenerating}
+              className="h-10 px-6"
+            >
+              {isGenerating ? (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Design
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </header>
 
       <main className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8">
           <div className="space-y-6">
             <Card className="p-6 bg-card shadow-[var(--shadow-soft)]">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -62,17 +115,28 @@ const RoomDecoration = () => {
               </h2>
               
               <div className="space-y-6">
-                <ImageUploadZone
-                  label="Room Photo"
-                  onImageUpload={setRoomImage}
-                  image={roomImage}
-                />
+                {images.map((image, index) => (
+                  <ImageUploadZone
+                    key={index}
+                    onImageUpload={(img) => handleImageUpload(index, img)}
+                    image={image}
+                  />
+                ))}
                 
+                {/* Always show an empty slot to add a new image */}
                 <ImageUploadZone
-                  label="Furniture/Decor Item"
-                  onImageUpload={setFurnitureImage}
-                  image={furnitureImage}
+                  onImageUpload={(img) => handleImageUpload(images.length, img)}
+                  image={null}
                 />
+
+                {/* Static mask image upload slot */}
+                <div className="pt-4 border-t border-border">
+                  <p className="text-sm font-medium mb-3 text-muted-foreground">Mask Image (Optional)</p>
+                  <ImageUploadZone
+                    onImageUpload={setMaskImage}
+                    image={maskImage}
+                  />
+                </div>
               </div>
             </Card>
 
@@ -85,25 +149,6 @@ const RoomDecoration = () => {
                 className="min-h-[100px] resize-none"
               />
             </Card>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={!roomImage || !furnitureImage || isGenerating}
-              className="w-full h-12 text-base font-medium"
-              size="lg"
-            >
-              {isGenerating ? (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Generate Design
-                </>
-              )}
-            </Button>
           </div>
 
           <ResultDisplay result={result} isGenerating={isGenerating} elapsedTime={elapsedTime} />
