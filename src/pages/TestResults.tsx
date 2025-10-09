@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -57,14 +58,25 @@ const TestResults = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [showAllImages, setShowAllImages] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<TestResult[]>([]);
   
   const itemsPerPage = 15;
-  const totalPages = Math.ceil(mockData.length / itemsPerPage);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
   
-  const paginatedData = mockData.slice(
+  const paginatedData = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  useEffect(() => {
+    // Simulate API call
+    setIsLoading(true);
+    setTimeout(() => {
+      setData(mockData);
+      setIsLoading(false);
+    }, 1500);
+  }, []);
 
   const formatTimestamp = (timestamp: string | null) => {
     if (!timestamp) return "N/A";
@@ -93,94 +105,103 @@ const TestResults = () => {
 
         <Card className="p-6 shadow-[var(--shadow-medium)]">
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[120px]">Model</TableHead>
-                  <TableHead className="w-[200px]">Prompt</TableHead>
-                  <TableHead className="w-[150px]">Input Images</TableHead>
-                  <TableHead className="w-[100px]">Result</TableHead>
-                  <TableHead className="w-[100px]">UX Latency</TableHead>
-                  <TableHead className="w-[100px]">API Time</TableHead>
-                  <TableHead className="w-[100px]">Gen Time</TableHead>
-                  <TableHead className="w-[150px]">Created</TableHead>
-                  <TableHead className="w-[150px]">Updated</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedData.map((result) => (
-                  <TableRow key={result._id}>
-                    <TableCell className="font-medium">{result.model}</TableCell>
-                    <TableCell>
-                      <p className="truncate max-w-[200px]" title={result.prompt}>
-                        {result.prompt}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-1">
-                          {result.input_images.slice(0, 3).map((img, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setSelectedImage(img)}
-                              className="w-8 h-8 rounded border border-border overflow-hidden hover:ring-2 hover:ring-ring transition-all"
-                            >
-                              <img
-                                src={img}
-                                alt={`Input ${idx + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </button>
-                          ))}
-                        </div>
-                        {result.input_images.length > 3 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleViewAllImages(result.input_images)}
-                            className="h-7 px-2"
-                          >
-                            <Eye className="w-3 h-3 mr-1" />
-                            +{result.input_images.length - 3}
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {result.result_image_base64 ? (
-                        <button
-                          onClick={() => setSelectedImage(result.result_image_base64)}
-                          className="w-12 h-12 rounded border border-border overflow-hidden hover:ring-2 hover:ring-ring transition-all"
-                        >
-                          <img
-                            src={result.result_image_base64}
-                            alt="Result"
-                            className="w-full h-full object-cover"
-                          />
-                        </button>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">N/A</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {formatLatency(result.user_experience_latency_ms)}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {formatLatency(result.api_execution_time_ms)}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {formatLatency(result.generation_api_time_ms)}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {formatTimestamp(result.created_at)}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {formatTimestamp(result.updated_at)}
-                    </TableCell>
-                  </TableRow>
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[120px]">Model</TableHead>
+                    <TableHead className="w-[200px]">Prompt</TableHead>
+                    <TableHead className="w-[150px]">Input Images</TableHead>
+                    <TableHead className="w-[100px]">Result</TableHead>
+                    <TableHead className="w-[100px]">UX Latency</TableHead>
+                    <TableHead className="w-[100px]">API Time</TableHead>
+                    <TableHead className="w-[100px]">Gen Time</TableHead>
+                    <TableHead className="w-[150px]">Created</TableHead>
+                    <TableHead className="w-[150px]">Updated</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedData.map((result) => (
+                    <TableRow key={result._id}>
+                      <TableCell className="font-medium">{result.model}</TableCell>
+                      <TableCell>
+                        <p className="truncate max-w-[200px]" title={result.prompt}>
+                          {result.prompt}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="flex gap-1">
+                            {result.input_images.slice(0, 3).map((img, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => setSelectedImage(img)}
+                                className="w-8 h-8 rounded border border-border overflow-hidden hover:ring-2 hover:ring-ring transition-all"
+                              >
+                                <img
+                                  src={img}
+                                  alt={`Input ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </button>
+                            ))}
+                          </div>
+                          {result.input_images.length > 3 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewAllImages(result.input_images)}
+                              className="h-7 px-2"
+                            >
+                              <Eye className="w-3 h-3 mr-1" />
+                              +{result.input_images.length - 3}
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {result.result_image_base64 ? (
+                          <button
+                            onClick={() => setSelectedImage(result.result_image_base64)}
+                            className="w-12 h-12 rounded border border-border overflow-hidden hover:ring-2 hover:ring-ring transition-all"
+                          >
+                            <img
+                              src={result.result_image_base64}
+                              alt="Result"
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">N/A</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatLatency(result.user_experience_latency_ms)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatLatency(result.api_execution_time_ms)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatLatency(result.generation_api_time_ms)}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {formatTimestamp(result.created_at)}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {formatTimestamp(result.updated_at)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
 
           {totalPages > 1 && (
