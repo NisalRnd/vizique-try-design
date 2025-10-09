@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import VirtualTryOn from "./pages/VirtualTryOn";
 import VirtualTryOn2 from "./pages/VirtualTryOn2";
 import RoomDecoration from "./pages/RoomDecoration";
+import TestResults from "./pages/TestResults";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/virtual-try-on" element={<VirtualTryOn />} />
           <Route path="/virtual-try-on-2" element={<VirtualTryOn2 />} />
           <Route path="/room-decoration" element={<RoomDecoration />} />
+          <Route path="/test-results" element={<TestResults />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
