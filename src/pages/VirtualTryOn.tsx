@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Upload, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ImageUploadZone from "@/components/ImageUploadZone";
-import ResultDisplay from "@/components/ResultDisplay";
+import CompactResultDisplay from "@/components/CompactResultDisplay";
+import PromptMakerModal from "@/components/PromptMakerModal";
 
 const VirtualTryOn = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -15,6 +16,7 @@ const VirtualTryOn = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [showPromptMaker, setShowPromptMaker] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -36,7 +38,6 @@ const VirtualTryOn = () => {
       newImages[index] = image;
       setImages(newImages);
     } else {
-      // Remove image at index
       setImages(images.filter((_, i) => i !== index));
     }
   };
@@ -44,9 +45,8 @@ const VirtualTryOn = () => {
   const handleGenerate = async () => {
     if (images.length === 0) return;
     
-    // Log Base64 encoded images array
     console.log('Images Array (Base64):', images);
-    console.log('Refinement Prompt:', prompt);
+    console.log('Prompt:', prompt);
     console.log('Selected Model:', model);
     
     const start = Date.now();
@@ -60,17 +60,21 @@ const VirtualTryOn = () => {
     }, 2000);
   };
 
+  const handleApplyPrompt = (generatedPrompt: string) => {
+    setPrompt(prev => prev ? `${prev}, ${generatedPrompt}` : generatedPrompt);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Virtual Try-On</h1>
-            <p className="text-sm text-muted-foreground">Visualize clothing on your model</p>
+            <h1 className="text-xl font-bold">Virtual Try-On</h1>
+            <p className="text-xs text-muted-foreground">Visualize clothing on your model</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Select value={model} onValueChange={setModel}>
-              <SelectTrigger className="w-[240px] h-10">
+              <SelectTrigger className="w-[200px] h-9 text-sm">
                 <SelectValue placeholder="Select model" />
               </SelectTrigger>
               <SelectContent>
@@ -85,17 +89,17 @@ const VirtualTryOn = () => {
             <Button
               onClick={handleGenerate}
               disabled={images.length === 0 || isGenerating}
-              className="h-10 px-6"
+              className="h-9 px-4 text-sm"
             >
               {isGenerating ? (
                 <>
-                  <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Generate Try-On
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                  Generate
                 </>
               )}
             </Button>
@@ -103,16 +107,14 @@ const VirtualTryOn = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-[320px_1fr] gap-8">
-          <div className="space-y-6">
-            <Card className="p-6 bg-card shadow-[var(--shadow-soft)]">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Upload className="w-5 h-5" />
-                Upload Images
-              </h2>
+      <main className="container mx-auto px-4 py-4">
+        <div className="grid lg:grid-cols-[280px_1fr_280px] gap-4">
+          {/* Left sidebar - Image uploads */}
+          <div className="space-y-3">
+            <Card className="p-3 bg-card shadow-[var(--shadow-soft)]">
+              <h2 className="text-sm font-semibold mb-3">Upload Images</h2>
               
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {images.map((image, index) => (
                   <ImageUploadZone
                     key={index}
@@ -121,28 +123,43 @@ const VirtualTryOn = () => {
                   />
                 ))}
                 
-                {/* Always show an empty slot to add a new image */}
                 <ImageUploadZone
                   onImageUpload={(img) => handleImageUpload(images.length, img)}
                   image={null}
                 />
               </div>
             </Card>
-
-            <Card className="p-6 bg-card shadow-[var(--shadow-soft)]">
-              <h2 className="text-lg font-semibold mb-4">Refinement Prompt</h2>
-              <Textarea
-                placeholder="e.g., make the dress longer, adjust the fit..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="min-h-[100px] resize-none"
-              />
-            </Card>
           </div>
 
-          <ResultDisplay result={result} isGenerating={isGenerating} elapsedTime={elapsedTime} />
+          {/* Center - Result */}
+          <CompactResultDisplay result={result} isGenerating={isGenerating} elapsedTime={elapsedTime} />
+
+          {/* Right sidebar - Prompt */}
+          <div className="space-y-3">
+            <Card className="p-3 bg-card shadow-[var(--shadow-soft)]">
+              <h2 className="text-sm font-semibold mb-2">Prompt</h2>
+              <Textarea
+                placeholder="Describe the virtual try-on transformation..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="min-h-[180px] resize-none text-sm"
+              />
+              <button
+                onClick={() => setShowPromptMaker(true)}
+                className="text-xs text-primary hover:underline mt-2 font-medium"
+              >
+                Advanced Prompting →
+              </button>
+            </Card>
+          </div>
         </div>
       </main>
+
+      <PromptMakerModal
+        open={showPromptMaker}
+        onOpenChange={setShowPromptMaker}
+        onApplyPrompt={handleApplyPrompt}
+      />
     </div>
   );
 };
