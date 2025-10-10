@@ -119,6 +119,7 @@ const TestResults = () => {
                     <TableHead className="w-[60px]">View</TableHead>
                     <TableHead className="w-[120px]">Model</TableHead>
                     <TableHead className="w-[200px]">Prompt</TableHead>
+                    <TableHead className="w-[120px]">Result Image</TableHead>
                     <TableHead className="w-[100px]">UX Latency</TableHead>
                     <TableHead className="w-[100px]">API Time</TableHead>
                     <TableHead className="w-[100px]">Gen Time</TableHead>
@@ -144,6 +145,17 @@ const TestResults = () => {
                         <p className="truncate max-w-[200px]" title={result.prompt}>
                           {result.prompt}
                         </p>
+                      </TableCell>
+                      <TableCell>
+                        {result.result_image_base64 ? (
+                          <img
+                            src={result.result_image_base64}
+                            alt="Result"
+                            className="w-20 h-20 object-cover rounded border border-border"
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">N/A</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-sm">
                         {formatLatency(result.user_experience_latency_ms)}
