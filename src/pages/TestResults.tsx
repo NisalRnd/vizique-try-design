@@ -65,23 +65,33 @@ const TestResults = () => {
   const [selectedResult, setSelectedResult] = useState<TestResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<TestResult[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   
-  const itemsPerPage = 15;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   useEffect(() => {
-    // Simulate API call
-    setIsLoading(true);
-    setTimeout(() => {
-      setData(mockData);
-      setIsLoading(false);
-    }, 1500);
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const skip = (currentPage - 1) * itemsPerPage;
+        const response = await fetch(
+          `http://localhost:8000/test_results/paginated?skip=${skip}&limit=${itemsPerPage}`
+        );
+        const result = await response.json();
+        setData(result.items || []);
+        setTotalCount(result.total || 0);
+      } catch (error) {
+        console.error("Failed to fetch test results:", error);
+        setData([]);
+        setTotalCount(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
 
   const formatTimestamp = (timestamp: string | null) => {
     if (!timestamp) return "N/A";
@@ -126,7 +136,7 @@ const TestResults = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedData.map((result) => (
+                  {data.map((result) => (
                     <TableRow key={result._id}>
                       <TableCell>
                         <Button
