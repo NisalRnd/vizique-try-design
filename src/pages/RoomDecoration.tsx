@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import ImageUploadZone from "@/components/ImageUploadZone";
 import ResultDisplay from "@/components/ResultDisplay";
 
 const RoomDecoration = () => {
+  const { toast } = useToast();
   const [images, setImages] = useState<string[]>([]);
   const [maskImage, setMaskImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
@@ -55,11 +57,31 @@ const RoomDecoration = () => {
     setStartTime(start);
     setElapsedTime(0);
     setIsGenerating(true);
-    // TODO: Integrate with AI backend
-    setTimeout(() => {
+    
+    try {
+      // TODO: Integrate with AI backend
+      // Simulate API call
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // Simulate random errors (10% chance)
+          if (Math.random() < 0.1) {
+            reject(new Error("Failed to generate image: API timeout error"));
+          } else {
+            resolve(images[0]);
+          }
+        }, 2000);
+      });
+      
       setResult(images[0]); // Placeholder
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Image Generation Failed",
+        description: error instanceof Error ? error.message : "An error occurred during image generation",
+      });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   return (

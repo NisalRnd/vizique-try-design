@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -38,7 +37,6 @@ interface TestResult {
   api_execution_time_ms: number | null;
   generation_api_time_ms: number | null;
   usage?: Record<string, any>;
-  error?: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -49,7 +47,7 @@ const mockData: TestResult[] = Array.from({ length: 25 }, (_, i) => ({
   model: `Model ${(i % 3) + 1}`,
   prompt: `Test prompt ${i + 1} with some description`,
   input_images: Array.from({ length: (i % 5) + 1 }, (_, j) => `data:image/png;base64,iVBORw0KGgo...${j}`),
-  result_image_base64: i % 7 === 0 ? null : `data:image/png;base64,iVBORw0KGgo...result${i}`,
+  result_image_base64: `data:image/png;base64,iVBORw0KGgo...result${i}`,
   user_experience_latency_ms: Math.floor(Math.random() * 5000) + 1000,
   api_execution_time_ms: Math.floor(Math.random() * 3000) + 500,
   generation_api_time_ms: Math.floor(Math.random() * 2000) + 300,
@@ -58,13 +56,11 @@ const mockData: TestResult[] = Array.from({ length: 25 }, (_, i) => ({
     completion_tokens: Math.floor(Math.random() * 500) + 50,
     total_tokens: Math.floor(Math.random() * 1500) + 150,
   },
-  error: i % 7 === 0 ? "Failed to generate image: API timeout error" : null,
   created_at: new Date(Date.now() - i * 86400000).toISOString(),
   updated_at: new Date(Date.now() - i * 86400000).toISOString(),
 }));
 
 const TestResults = () => {
-  const { toast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedResult, setSelectedResult] = useState<TestResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,18 +80,8 @@ const TestResults = () => {
     setTimeout(() => {
       setData(mockData);
       setIsLoading(false);
-      
-      // Show error toasts for failed generations
-      const errorResults = mockData.filter(result => result.error);
-      errorResults.forEach(result => {
-        toast({
-          variant: "destructive",
-          title: "Image Generation Failed",
-          description: result.error || "An error occurred during image generation",
-        });
-      });
     }, 1500);
-  }, [toast]);
+  }, []);
 
   const formatTimestamp = (timestamp: string | null) => {
     if (!timestamp) return "N/A";
@@ -166,9 +152,7 @@ const TestResults = () => {
                             className="w-20 h-20 object-cover rounded border border-border"
                           />
                         ) : (
-                          <span className="text-xs text-muted-foreground">
-                            {result.error ? "Error" : "N/A"}
-                          </span>
+                          <span className="text-xs text-muted-foreground">N/A</span>
                         )}
                       </TableCell>
                       <TableCell className="text-sm">
@@ -256,14 +240,6 @@ const TestResults = () => {
                   className="mt-1 min-h-[80px]"
                 />
               </div>
-
-              {/* Error Message */}
-              {selectedResult.error && (
-                <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-                  <label className="text-sm font-medium text-destructive">Error</label>
-                  <p className="text-sm text-destructive mt-1">{selectedResult.error}</p>
-                </div>
-              )}
 
               {/* Performance Metrics */}
               <div className="grid grid-cols-3 gap-4">
